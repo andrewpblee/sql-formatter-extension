@@ -1,26 +1,10 @@
 const validate = require("./validateQuery");
 
-const keywords = [
-  "select",
-  "from",
-  "group",
-  "having",
-  "where",
-  "left",
-  "right",
-  "inner",
-  "outer",
-  "join",
-  "limit",
-  "case",
-  "when",
-  "else",
-  "end",
-];
+const keywords = /(\n|\t)?select|from|group|having|where|left|right|inner|outer|join|limit|case|else|end/;
 
 const newLineForKeyword = (query) => {
   const queryList = query.split(" ");
-  const newLined = queryList.map((x) => (keywords.includes(x) ? "\n" + x : x));
+  const newLined = queryList.map((x) => (keywords.test(x) ? "\n" + x : x));
   return newLined.join(" ");
 };
 
@@ -39,18 +23,16 @@ const newLineForLastColumnName = (query) => {
     .filter((x) => x);
   return queryList
     .map((x, i) =>
-      indexOfFrom.includes(i) && !keywords.includes(x) ? "\n" + x : x
+      indexOfFrom.includes(i) && !keywords.test(x) ? "\n" + x : x
     )
     .join(" ");
 };
 
 const newLines = (query) => {
-  if (validate.queryContainsSelect(query)) {
-    const keywords = newLineForKeyword(query);
-    const columnNames = newLineForColumnName(keywords);
-    const lastColumnNames = newLineForLastColumnName(columnNames);
-    return lastColumnNames;
-  }
+  const keywords = newLineForKeyword(query);
+  const columnNames = newLineForColumnName(keywords);
+  const lastColumnNames = newLineForLastColumnName(columnNames);
+  return lastColumnNames;
 };
 
 module.exports = {

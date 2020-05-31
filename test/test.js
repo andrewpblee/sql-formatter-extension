@@ -1,6 +1,8 @@
 const assert = require("assert");
 const newLine = require("../sql_formatter/newLine.js");
 const validate = require("../sql_formatter/validateQuery.js");
+const indent = require("../sql_formatter/indents.js");
+const combined = require("../sql_formatter/index");
 
 describe("Test Query Validation", function () {
   it('should ensure the query contains "select"', function () {
@@ -35,6 +37,23 @@ describe("Test Keywords and Columns are on new lines", function () {
         "select date, users, sessions from table where date = '2020-01-01'"
       ),
       "\nselect \ndate, \nusers, \nsessions \nfrom table \nwhere date = '2020-01-01'"
+    );
+  });
+});
+
+describe("Test subqueries and inner keywords are indented", function () {
+  it("when statements in a case when should be indented", function () {
+    assert.equal(
+      indent.indentWhen("select case when column then column end as column"),
+      "select case \n\twhen column then column end as column"
+    );
+  });
+  it("should indent and new line when statements", function () {
+    assert.equal(
+      combined.formattedSQLQuery(
+        "select case when date = '2020-01-01' then date else null end from table"
+      ),
+      "\nselect \ncase \n\twhen date = '2020-01-01' then date \nelse null \nend \nfrom table"
     );
   });
 });
