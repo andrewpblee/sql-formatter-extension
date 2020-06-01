@@ -1,12 +1,29 @@
 const assert = require("assert");
 const newLine = require("../sql_formatter/newLine.js");
-const validate = require("../sql_formatter/validateQuery.js");
 const indent = require("../sql_formatter/indents.js");
 const combined = require("../sql_formatter/index");
+const clean = require("../sql_formatter/cleanQuery");
+
+describe("Test Query Cleaning", function () {
+  it("should remove all formatting characters", function () {
+    assert.equal(
+      clean.removeFormattingChars("select \n\t* from \ttable"),
+      "select * from table"
+    );
+  });
+});
 
 describe("Test Query Validation", function () {
   it('should ensure the query contains "select"', function () {
-    assert.equal(validate.queryContainsSelect("select * from table"), true);
+    assert.equal(clean.queryContainsSelect("select * from table"), true);
+  });
+  it("query should be an array", function () {
+    assert.deepEqual(clean.cleanQuery("select * from table"), [
+      "select",
+      "*",
+      "from",
+      "table",
+    ]);
   });
 });
 

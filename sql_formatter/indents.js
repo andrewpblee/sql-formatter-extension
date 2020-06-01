@@ -6,6 +6,8 @@ const indentWhen = (query) => {
   return queryListed.map((x) => (/when/.test(x) ? "\n\t" + x : x)).join(" ");
 };
 
+const indentSubQuery = (query) => {};
+
 const indentCombined = pipe(indentWhen);
 
 module.exports = { indentWhen, indentCombined };

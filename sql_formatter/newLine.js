@@ -1,4 +1,5 @@
-const validate = require("./validateQuery");
+const _pipe = (f, g) => (...args) => g(f(...args));
+const pipe = (...fns) => fns.reduce(_pipe);
 
 const keywords = /(\n|\t)?select|from|group|having|where|left|right|inner|outer|join|limit|case|else|end/;
 
@@ -28,12 +29,11 @@ const newLineForLastColumnName = (query) => {
     .join(" ");
 };
 
-const newLines = (query) => {
-  const keywords = newLineForKeyword(query);
-  const columnNames = newLineForColumnName(keywords);
-  const lastColumnNames = newLineForLastColumnName(columnNames);
-  return lastColumnNames;
-};
+const newLines = pipe(
+  newLineForKeyword,
+  newLineForColumnName,
+  newLineForLastColumnName
+);
 
 module.exports = {
   newLineForKeyword,
