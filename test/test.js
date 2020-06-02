@@ -73,4 +73,10 @@ describe("Test subqueries and inner keywords are indented", function () {
       "\nselect \ncase \n\twhen date = '2020-01-01' then date \nelse null \nend \nfrom table"
     );
   });
+  it("subqueries should be indented and on a new line", function () {
+    assert.equal(
+      indent.indentNewLineSubQuery("select * from (select * from table)"),
+      "select * from \n\t(select * from table)"
+    );
+  });
 });
