@@ -30,29 +30,69 @@ describe("Test Query Validation", function () {
 describe("Test Keywords and Columns are on new lines", function () {
   it("keywords should have a preceding new line character", function () {
     assert.equal(
-      newLine.newLineForKeyword(
-        "select * from table where date = '2020-01-01' group by 1 limit 100 having count(*) > 1"
-      ),
+      newLine
+        .newLineForKeyword([
+          "select",
+          "*",
+          "from",
+          "table",
+          "where",
+          "date",
+          "=",
+          "'2020-01-01'",
+          "group",
+          "by",
+          "1",
+          "limit",
+          "100",
+          "having",
+          "count(*)",
+          ">",
+          "1",
+        ])
+        .join(" "),
       "\nselect * \nfrom table \nwhere date = '2020-01-01' \ngroup by 1 \nlimit 100 \nhaving count(*) > 1"
     );
   });
   it("column names with trailing comma should have a preceding newline character", function () {
     assert.equal(
-      newLine.newLineForColumnName("select date, sessions, users from table"),
+      newLine
+        .newLineForColumnName([
+          "select",
+          "date,",
+          "sessions,",
+          "users",
+          "from",
+          "table",
+        ])
+        .join(" "),
       "select \ndate, \nsessions, users from table"
     );
   });
   it("The last column name without a comma should be on a new line", function () {
     assert.equal(
-      newLine.newLineForLastColumnName("select column from table"),
+      newLine
+        .newLineForLastColumnName(["select", "column", "from", "table"])
+        .join(" "),
       "select \ncolumn from table"
     );
   });
   it("all sql that needs a new line, should have a new line", function () {
     assert.equal(
-      newLine.newLines(
-        "select date, users, sessions from table where date = '2020-01-01'"
-      ),
+      newLine
+        .newLines([
+          "select",
+          "date,",
+          "users,",
+          "sessions",
+          "from",
+          "table",
+          "where",
+          "date",
+          "=",
+          "'2020-01-01'",
+        ])
+        .join(" "),
       "\nselect \ndate, \nusers, \nsessions \nfrom table \nwhere date = '2020-01-01'"
     );
   });
@@ -61,21 +101,36 @@ describe("Test Keywords and Columns are on new lines", function () {
 describe("Test subqueries and inner keywords are indented", function () {
   it("when statements in a case when should be indented", function () {
     assert.equal(
-      indent.indentWhen("select case when column then column end as column"),
+      indent
+        .indentWhen([
+          "select",
+          "case",
+          "when",
+          "column",
+          "then",
+          "column",
+          "end",
+          "as",
+          "column",
+        ])
+        .join(" "),
       "select case \n\twhen column then column end as column"
     );
   });
-  it("should indent and new line when statements", function () {
-    assert.equal(
-      combined.formattedSQLQuery(
-        "select case when date = '2020-01-01' then date else null end from table"
-      ),
-      "\nselect \ncase \n\twhen date = '2020-01-01' then date \nelse null \nend \nfrom table"
-    );
-  });
+
   it("subqueries should be indented and on a new line", function () {
-    assert.equal(
-      indent.indentNewLineSubQuery("select * from (select * from table)"),
+    assert.deepEqual(
+      indent
+        .indentNewLineSubQuery([
+          "select",
+          "*",
+          "from",
+          "(select",
+          "*",
+          "from",
+          "table)",
+        ])
+        .join(" "),
       "select * from \n\t(select * from table)"
     );
   });
